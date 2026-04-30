@@ -169,7 +169,6 @@
     </div>
 </section>
 
-@if (carregandoNoticias() || ultimasNoticias().length > 0) {
 <!-- ══════════ ÚLTIMAS NOTÍCIAS ══════════ -->
 <section class="section-noticias" aria-labelledby="noticias-titulo">
     <div class="section-inner">
@@ -222,6 +221,10 @@
             }
         </div>
 
+        } @else {
+        <div class="feed-vazio" role="status">
+            <p>Nenhuma novidade cadastrada no momento.</p>
+        </div>
         }
 
         <div class="noticias-footer" style="margin-top: 2rem; text-align: center;">
@@ -232,9 +235,7 @@
         </div>
     </div>
 </section>
-}
 
-@if (carregandoParceiros() || parceiros().length > 0) {
 <!-- ══════════ APOIADORES E PARCEIROS ══════════ -->
 <section class="parceiros" aria-labelledby="parceiros-titulo">
     <div class="section-inner">
@@ -251,7 +252,7 @@
             </div>
             }
         </div>
-        } @else {
+        } @else if (parceiros().length > 0) {
         <div class="parceiros-grid" role="list">
             @for (parceiro of parceiros(); track parceiro.id) {
             <div class="parceiro-card animate-on-scroll" appAnimateOnScroll role="listitem">
@@ -260,6 +261,9 @@
                     <img [src]="parceiro.logoUrl | cloudinary" 
                          [alt]="'Logo corporativo de ' + (parceiro.nomeFantasia || parceiro.nomeRazaoSocial)" loading="lazy">
                 </figure>
+                <p class="parceiro-nome">
+                    <span class="sr-only">Parceiro: </span>{{ parceiro.nomeFantasia || parceiro.nomeRazaoSocial }}
+                </p>
                 } @else {
                 <div class="parceiro-placeholder">
                     <span aria-hidden="true">{{ (parceiro.nomeFantasia || parceiro.nomeRazaoSocial)?.charAt(0) | uppercase }}</span>
@@ -271,10 +275,13 @@
             </div>
             }
         </div>
+        } @else {
+        <div class="feed-vazio" role="status">
+            <p>Nenhum apoiador cadastrado no momento.</p>
+        </div>
         }
     </div>
 </section>
-}
 
 <!-- ══════════ FAQ (PERGUNTAS FREQUENTES) ══════════ -->
 <section class="faq" aria-labelledby="faq-titulo">
