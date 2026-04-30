@@ -75,6 +75,19 @@ body {
     outline: none;
 }
 
+// Remove o anel de foco no titulo dos headers publicos
+.page-hero h1:focus,
+.page-hero h1:focus-visible,
+.page-header h1:focus,
+.page-header h1:focus-visible,
+.page-hero .page-hero-title:focus,
+.page-hero .page-hero-title:focus-visible,
+.page-header .title:focus,
+.page-header .title:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
 // --- Links ---
 a {
     color: $color-black;

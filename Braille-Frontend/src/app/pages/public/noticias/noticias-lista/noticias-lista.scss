@@ -41,7 +41,6 @@ $transition: 0.2s ease-in-out;
 // ══════════════════════════════════════════════════════════════
 .page-header {
     background: #1a1a00;
-    background-image: url('/fachada_ilbes.png');
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -80,6 +79,12 @@ $transition: 0.2s ease-in-out;
         color: #fff;
         margin: 0 0 1rem;
         line-height: 1.2;
+
+        &:focus,
+        &:focus-visible {
+            outline: none !important;
+            box-shadow: none !important;
+        }
     }
 
     .subtitle {
@@ -128,17 +133,20 @@ $transition: 0.2s ease-in-out;
 .search-input-wrapper {
     display: flex;
     position: relative;
-    align-items: center;
+    align-items: stretch;
 
     .search-icon {
         position: absolute;
         left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
         color: $gray-400;
         font-size: 1.25rem;
     }
 
     input {
         width: 100%;
+        min-height: 52px;
         padding: 0.875rem 1rem 0.875rem 2.75rem;
         border: 2px solid $gray-200;
         border-radius: 0.5rem 0 0 0.5rem;
@@ -146,6 +154,7 @@ $transition: 0.2s ease-in-out;
         color: $gray-900;
         transition: all $transition;
         background: $gray-50;
+        box-sizing: border-box;
 
         &::placeholder {
             color: $gray-400;
@@ -160,6 +169,10 @@ $transition: 0.2s ease-in-out;
     }
 
     .btn-buscar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 52px;
         background: $gray-900;
         color: white;
         border: none;

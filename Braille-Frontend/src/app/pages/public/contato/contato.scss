@@ -15,7 +15,6 @@ $gray-900: #1a1a1a;
 // ── Page hero (reutiliza classes do sobre.scss via :host) ──
 .page-hero {
     background: $black;
-    background-image: url('/fachada_ilbes.png');
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -56,6 +55,12 @@ $gray-900: #1a1a1a;
     color: #fff;
     margin: 0 0 1rem;
     line-height: 1.2;
+
+    &:focus,
+    &:focus-visible {
+        outline: none !important;
+        box-shadow: none !important;
+    }
 }
 
 .page-hero-desc {
