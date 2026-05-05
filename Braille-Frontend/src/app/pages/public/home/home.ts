@@ -42,6 +42,7 @@ export class Home implements OnInit {
   parceiros = signal<Apoiador[]>([]);
   carregandoParceiros = signal<boolean>(false);
   fachadaUrl = signal<string>('');
+  private fachadaLoadToken = 0;
 
   // Estados síncronos cacheados (Via AsyncPipe limpo em HTML)
   heroConfig$: Observable<any>;
@@ -67,21 +68,23 @@ export class Home implements OnInit {
     );
 
     // Inscrições atadas ao LifeCycle (Limpeza automática através de takeUntilDestroyed)
-  this.siteConfig.configs$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(configs => {
+    this.siteConfig.configs$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(configs => {
       if (configs && configs['fachadaUrl']) {
-         this.fachadaUrl.set(configs['fachadaUrl']);
+        this.atualizarFachada(configs['fachadaUrl']);
+      } else {
+        this.fachadaUrl.set('');
       }
     });
 
-  this.siteConfig.getSecao('oficinas').pipe(takeUntilDestroyed(this.destroyRef)).subscribe(dados => {
+    this.siteConfig.getSecao('oficinas').pipe(takeUntilDestroyed(this.destroyRef)).subscribe(dados => {
       this.safeParseJsonSignal(dados, this.oficinas);
     });
 
-  this.siteConfig.getSecao('depoimentos').pipe(takeUntilDestroyed(this.destroyRef)).subscribe(dados => {
+    this.siteConfig.getSecao('depoimentos').pipe(takeUntilDestroyed(this.destroyRef)).subscribe(dados => {
       this.safeParseJsonSignal(dados, this.depoimentos);
     });
 
-  this.siteConfig.getSecao('faq').pipe(takeUntilDestroyed(this.destroyRef)).subscribe(dados => {
+    this.siteConfig.getSecao('faq').pipe(takeUntilDestroyed(this.destroyRef)).subscribe(dados => {
       this.safeParseJsonSignal(dados, this.faq);
     });
   }
@@ -107,7 +110,7 @@ export class Home implements OnInit {
 
   private carregarParceiros() {
     this.carregandoParceiros.set(true);
-  this.apoiadoresService.buscarPublicos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.apoiadoresService.buscarPublicos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (dados: Apoiador[]) => {
         this.parceiros.set(dados || []);
         this.carregandoParceiros.set(false);
@@ -120,7 +123,7 @@ export class Home implements OnInit {
 
   private carregarUltimasNoticias() {
     this.carregandoNoticias.set(true);
-  this.http.get<any>(`${this.apiUrl}/comunicados?page=1&limit=3`).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.http.get<any>(`${this.apiUrl}/comunicados?page=1&limit=3`).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         this.ultimasNoticias.set(Array.isArray(res) ? res : (res.data ?? []));
         this.carregandoNoticias.set(false);
@@ -129,5 +132,29 @@ export class Home implements OnInit {
         this.carregandoNoticias.set(false); // Fallback silencioso blindando front-end
       }
     });
+  }
+
+  private atualizarFachada(url: string) {
+    // Mantem a imagem atual ate o novo arquivo finalizar o load
+    const token = ++this.fachadaLoadToken;
+    const cacheBustedUrl = this.comCacheBuster(url, Date.now());
+    const img = new Image();
+
+    img.onload = () => {
+      if (token === this.fachadaLoadToken) {
+        this.fachadaUrl.set(cacheBustedUrl);
+      }
+    };
+
+    img.onerror = () => {
+      // Se falhar, mantem a imagem atual para evitar flash de quebra visual
+    };
+
+    img.src = cacheBustedUrl;
+  }
+
+  private comCacheBuster(url: string, version: number) {
+    const separator = url.includes('?') ? '&' : '?';
+    return `${url}${separator}v=${version}`;
   }
 }
